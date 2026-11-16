@@ -1,5 +1,9 @@
 # Jellyfin-Plugin-KickUser
 
+> [!NOTE]
+> Original plugin by [cedev-1/Jellyfin-Plugin-KickUser](https://github.com/cedev-1/Jellyfin-Plugin-KickUser).
+> This fork only updates it for Jellyfin 10.11.11.
+
 Jellyfin plugin to automatically disable or delete users who have been inactive for a specified period.
 
 ![banner](./media/banner.png)
@@ -10,7 +14,7 @@ Jellyfin plugin to automatically disable or delete users who have been inactive 
 2. Click to + to add the URL.
 
 ```
-https://raw.githubusercontent.com/cedev-1/Jellyfin-Plugin-KickUser/master/manifest.json
+https://raw.githubusercontent.com/lNaymonl/jellyfin-plugin-KickUser/main/manifest.json
 ```
 
 3. On the Catalog page click on Install.
