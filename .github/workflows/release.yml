@@ -10,23 +10,25 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
 
       - name: Build
-        run: dotnet build Jellyfin.Plugin.KickUser/Jellyfin.Plugin.KickUser.csproj -c Release -o bin/Release/net9.0
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          dotnet build Jellyfin.Plugin.KickUser/Jellyfin.Plugin.KickUser.csproj -c Release -o bin/Release/net9.0 -p:AssemblyVersion=$VERSION -p:FileVersion=$VERSION
 
       - name: Create Zip
         run: |
           cd bin/Release/net9.0
           zip -r ../../../Jellyfin.Plugin.KickUser.zip Jellyfin.Plugin.KickUser.dll
-        
+
       - name: Calculate Hash
         id: hash
         run: |
@@ -38,16 +40,16 @@ jobs:
           git config user.email "actions@github.com"
           git fetch origin main
           git checkout main
-          
+
       - name: Update Manifest
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
           CHECKSUM=${{ steps.hash.outputs.checksum }}
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          
+
           # Temporary file for jq output
           tmp=$(mktemp)
-          
+
           # Add new version entry to the beginning of the versions array
           jq --arg ver "$VERSION" \
              --arg sum "$CHECKSUM" \
@@ -57,13 +59,13 @@ jobs:
               .[0].versions = [{
                 version: $ver,
                 changelog: "See GitHub Release",
-                targetAbi: ($v[0].targetAbi // "10.11.5"),
+                targetAbi: "10.11.11",
                 sourceUrl: $url,
                 checksum: $sum,
                 timestamp: $time
               }] + $v' \
              manifest.json > "$tmp" && mv "$tmp" manifest.json
-             
+
       - name: Commit Manifest
         run: |
           git add manifest.json

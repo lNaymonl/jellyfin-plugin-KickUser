@@ -43,7 +43,7 @@ namespace Jellyfin.Plugin.KickUser.Services
                 config.ActionType,
                 config.DryRun);
 
-            var users = _userManager.Users.ToList();
+            var users = _userManager.GetUsers().ToList();
             var now = DateTime.UtcNow;
             var threshold = TimeSpan.FromDays(config.InactivityThresholdDays);
 
@@ -124,7 +124,7 @@ namespace Jellyfin.Plugin.KickUser.Services
                         if (userDto.Policy != null)
                         {
                             userDto.Policy.IsDisabled = true;
-                            await _userManager.UpdateUserAsync(user).ConfigureAwait(false);
+                            await _userManager.UpdatePolicyAsync(user.Id, userDto.Policy).ConfigureAwait(false);
 
                             _logger.LogWarning(
                                 "DISABLED user {Username} (ID: {UserId}) due to inactivity",
